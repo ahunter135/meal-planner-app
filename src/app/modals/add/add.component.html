@@ -1,0 +1,24 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle
+      >Add a description for the meal this week</ion-card-subtitle
+    >
+    <ion-card-title>{{ startDate }} - {{ endDate }}</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-item lines="none">
+      <ion-label position="stacked">Meal Description</ion-label>
+      <ion-input
+        autocapitalize="words"
+        autocomplete="on"
+        autocorrect="on"
+        placeholder="Taco Salad on Monday"
+        [(ngModel)]="mealDescription"
+      ></ion-input>
+    </ion-item>
+  </ion-card-content>
+  <ion-button expand="block" fill="outline" (click)="addEntry(mealDescription)"
+    >Submit</ion-button
+  >
+</ion-card>

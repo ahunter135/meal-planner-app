@@ -1,0 +1,23 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle
+      >Add a description for your grocery item!</ion-card-subtitle
+    >
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-item lines="none">
+      <ion-label position="stacked">Grocery Item</ion-label>
+      <ion-input
+        autocapitalize="words"
+        autocomplete="on"
+        autocorrect="on"
+        placeholder="Cream Cheese"
+        [(ngModel)]="mealDescription"
+      ></ion-input>
+    </ion-item>
+  </ion-card-content>
+  <ion-button expand="block" fill="outline" (click)="addEntry(mealDescription)"
+    >Submit</ion-button
+  >
+</ion-card>

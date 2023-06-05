@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-button (click)="subtractWeek()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title (click)="openDatePicker()">
+      {{startDate}} - {{endDate}}</ion-title
+    >
+    <ion-buttons slot="end">
+      <ion-button (click)="setToToday()">Today</ion-button>
+      <ion-button (click)="addWeek()">
+        <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" id="main">
+  <ion-card mode="ios" *ngIf="entries.length > 0">
+    <ion-card-content>
+      <ion-list #slidingList>
+        <!--<ion-reorder-group disabled="true" (ionItemReorder)="doReorder($event)">-->
+        <ion-item-sliding *ngFor="let item of entries">
+          <ion-item lines="full" mode="ios" shape="round" #item>
+            <ion-label class="ion-text-wrap">
+              <ion-text>{{item.description}}</ion-text>
+            </ion-label>
+            <ion-checkbox
+              slot="start"
+              [(ngModel)]="item.isChecked"
+              (ionChange)="itemHasBeenChecked(item)"
+            ></ion-checkbox>
+            <ion-reorder slot="end"></ion-reorder>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="warning" (click)="edit(item)"
+              ><ion-icon
+                slot="icon-only"
+                name="create-outline"
+                style="color: white"
+              ></ion-icon
+            ></ion-item-option>
+            <ion-item-option color="medium" (click)="showOptions(item)"
+              ><ion-icon slot="icon-only" name="information"></ion-icon
+            ></ion-item-option>
+            <ion-item-option color="danger" (click)="delete(item)"
+              ><ion-icon slot="icon-only" name="trash"></ion-icon
+            ></ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <!-- </ion-reorder-group>-->
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="entries.length === 0" class="no-entries">
+    <p>No Entries Available</p>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button
+      ><ion-icon name="arrow-up-circle"></ion-icon
+    ></ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="showWeekly()">
+        <ion-icon name="fast-food"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button routerLink="/tabs/tab1/recipe-book">
+        <ion-icon name="book"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="showAdd()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

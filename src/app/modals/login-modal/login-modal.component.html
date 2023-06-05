@@ -1,0 +1,27 @@
+<div class="card-content">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Login With Email/Password</ion-card-subtitle>
+      <ion-card-title>Meal Planner</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="input-container">
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" [(ngModel)]="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Password</ion-label>
+          <ion-input type="password" [(ngModel)]="password"></ion-input>
+        </ion-item>
+        <span class="button-container">
+          <ion-button expand="block" fill="outline" (click)="login()"
+            >Login</ion-button
+          >
+          <a (click)="navToCreateAccount()">Create Account</a>
+        </span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>
