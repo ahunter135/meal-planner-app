@@ -8,7 +8,9 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./details.page.scss'],
 })
 export class DetailsPage implements OnInit {
-  item = {};
+  item = {
+    description: ""
+  };
   constructor(private api: ApiService, private route: ActivatedRoute) { }
 
   ngOnInit() {

@@ -17,15 +17,6 @@
             "value": "public, max-age=0"
           }
         ]
-      },
-      {
-        "source": "ngsw-worker.js",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache"
-          }
-        ]
       }
     ]
   }

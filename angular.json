@@ -41,7 +41,7 @@
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true,
-            "serviceWorker": true,
+            "serviceWorker": false,
             "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
