@@ -28,12 +28,7 @@ export class Tab1Page {
     private routerOutlet: IonRouterOutlet, private api: ApiService,
     private loading: LoadingController, private actionSheetCtrl: ActionSheetController,
     private gestureCtrl: GestureController, private ref: ChangeDetectorRef, private router: Router) {
-      const loggedIn = window.localStorage.getItem('loggedInPlanner');
-    if (!loggedIn || loggedIn === 'null') {
-      this.showLogin();
-    } else {
-      this.getRefreshedData(null);
-    }
+
     this.startDate = this.currentDate.startOf('week').format('MMM DD');
     this.endDate = this.currentDate.endOf('week').format('MMM DD');
 
@@ -71,9 +66,9 @@ export class Tab1Page {
 
   }
 
- ionViewWillLeave() {
-  clearInterval(this.changesInterval);
- }
+  ionViewWillLeave() {
+    clearInterval(this.changesInterval);
+  }
 
   ionViewWillEnter() {
     const loggedIn = window.localStorage.getItem('loggedInPlanner');
@@ -83,7 +78,7 @@ export class Tab1Page {
       this.getRefreshedData(null);
     }
 
-    this.changesInterval = setInterval(() => {this.ref.detectChanges();}, 100);
+    this.changesInterval = setInterval(() => { this.ref.detectChanges(); }, 100);
   }
 
   async edit(item) {
@@ -205,7 +200,7 @@ export class Tab1Page {
             if (Array.isArray(this.api.userProfile.recipes)) {
               let found = false;
               for (const i of this.api.userProfile.recipes) {
-                if (i.id ===  item.id) {
+                if (i.id === item.id) {
                   found = true;
                 }
               }
@@ -291,7 +286,7 @@ export class Tab1Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then(data => {});
+    modal.onWillDismiss().then(data => { });
   }
 
   setToToday() {
@@ -305,14 +300,14 @@ export class Tab1Page {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   array_move(arr, old_index, new_index) {
     if (new_index >= arr.length) {
-        let k = new_index - arr.length + 1;
-        while (k--) {
-            arr.push(undefined);
-        }
+      let k = new_index - arr.length + 1;
+      while (k--) {
+        arr.push(undefined);
+      }
     }
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing
-};
+  };
 
   async showAdd() {
     const modal = await this.modalCtrl.create({

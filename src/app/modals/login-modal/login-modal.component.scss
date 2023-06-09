@@ -1,13 +1,24 @@
 .card-content {
-  display: block;
-  margin: auto;
+  display: flex;
   width: 100%;
-  height: 50%;
+  height: 100%;
+  background-color: var(--ion-color-primary);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  ion-card {
+    width: 95%;
+  }
 }
 
 .button-container {
-  display: block;
+  margin-top: 15px !important;
+  display: flex;
   margin: auto;
   width: 100%;
   text-align: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
 }
