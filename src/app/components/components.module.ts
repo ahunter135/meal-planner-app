@@ -4,20 +4,15 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { DetailsPageRoutingModule } from './details-routing.module';
-
-import { DetailsPage } from './details.page';
 import { RecipeCardSmallComponent } from 'src/app/components/recipe-card-small/recipe-card-small.component';
-import { ComponentsModule } from 'src/app/components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DetailsPageRoutingModule,
-    ComponentsModule
   ],
-  declarations: [DetailsPage]
+  exports: [RecipeCardSmallComponent],
+  declarations: [RecipeCardSmallComponent]
 })
-export class DetailsPageModule {}
+export class ComponentsModule {}

@@ -1,0 +1,36 @@
+.card-container {
+    position: relative;
+    width: 300px;
+    height: 225px;
+    background: var(--ion-color-primary);
+    border-radius: 10px;
+    margin: 25px;
+
+    #recipe-image {
+        position: relative;
+        top: -20%;
+        border-radius: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 125px;
+        max-width: 125px;
+    }
+
+    .card-text-container {
+        position: relative;
+    }
+
+    #recipe-title {
+        position: relative;
+        bottom: 40px;
+        left: 25px;
+        right: 25px;
+        color: white;
+        h6 {
+            width: 85%;
+        }
+        p {
+            font-size: 16px;
+        }
+    }
+}

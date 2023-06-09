@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
+import { RecipeCardSmallComponent } from './components/recipe-card-small/recipe-card-small.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,9 +17,6 @@ import { HttpClientModule } from '@angular/common/http';
   // eslint-disable-next-line max-len
   imports: [BrowserModule, HttpClientModule, IonicModule.forRoot({mode: 'ios'}), AppRoutingModule, ServiceWorkerModule.register('ngsw-worker.js', {
   enabled: environment.production,
-  // Register the ServiceWorker as soon as the app is stable
-  // or after 30 seconds (whichever comes first).
-  registrationStrategy: 'registerWhenStable:30000'
 })],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
