@@ -5,9 +5,7 @@
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title (click)="openDatePicker()">
-      {{startDate}} - {{endDate}}</ion-title
-    >
+    <ion-title> {{startDate}} - {{endDate}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="setToToday()">Today</ion-button>
       <ion-button (click)="addWeek()">
@@ -64,10 +62,9 @@
       ><ion-icon name="arrow-up-circle"></ion-icon
     ></ion-fab-button>
     <ion-fab-list side="top">
-      
-      <ion-fab-button routerLink="/tabs/tab1/recipe-book" class="tint-color">
+      <!--<ion-fab-button routerLink="/tabs/tab1/recipe-book" class="tint-color">
         <ion-icon name="book" color="light"></ion-icon>
-      </ion-fab-button>
+      </ion-fab-button>-->
       <ion-fab-button (click)="showAdd()" class="tint-color">
         <ion-icon name="add" color="light"></ion-icon>
       </ion-fab-button>

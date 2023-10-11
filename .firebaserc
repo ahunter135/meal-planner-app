@@ -1,5 +1,14 @@
 {
   "projects": {
-    "default": "online-meal-planner"
+    "default": "meal-planner-austinhunter"
+  },
+  "targets": {
+    "meal-planner-austinhunter": {
+      "hosting": {
+        "app": [
+          "meal-planner-austinhunter"
+        ]
+      }
+    }
   }
 }

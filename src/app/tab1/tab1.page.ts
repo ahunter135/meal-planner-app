@@ -1,21 +1,30 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
-import { ActionSheetController, Gesture, GestureController, IonRouterOutlet, LoadingController, ModalController, } from '@ionic/angular';
-import * as dayjs from 'dayjs';
-import { AddComponent } from '../modals/add/add.component';
-import { LoginModalComponent } from '../modals/login-modal/login-modal.component';
-import { ApiService } from '../services/api.service';
-import { v4 as uuidv4 } from 'uuid';
-import { WeeklyComponent } from '../modals/weekly/weekly.component';
-import { DateComponent } from '../modals/date/date.component';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, Component, ViewChild } from "@angular/core";
+import {
+  ActionSheetController,
+  AlertController,
+  Gesture,
+  GestureController,
+  IonRouterOutlet,
+  LoadingController,
+  ModalController,
+} from "@ionic/angular";
+import * as dayjs from "dayjs";
+import { AddComponent } from "../modals/add/add.component";
+import { LoginModalComponent } from "../modals/login-modal/login-modal.component";
+import { ApiService } from "../services/api.service";
+import { v4 as uuidv4 } from "uuid";
+import { WeeklyComponent } from "../modals/weekly/weekly.component";
+import { DateComponent } from "../modals/date/date.component";
+import { Router } from "@angular/router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  selector: "app-tab1",
+  templateUrl: "tab1.page.html",
+  styleUrls: ["tab1.page.scss"],
 })
 export class Tab1Page {
-  @ViewChild('slidingList') slidingList;
+  @ViewChild("slidingList") slidingList;
 
   currentDate = dayjs();
   startDate;
@@ -24,20 +33,26 @@ export class Tab1Page {
   startSwipeLocation;
   endSwipeLocation;
   changesInterval;
-  constructor(private modalCtrl: ModalController,
-    private routerOutlet: IonRouterOutlet, private api: ApiService,
-    private loading: LoadingController, private actionSheetCtrl: ActionSheetController,
-    private gestureCtrl: GestureController, private ref: ChangeDetectorRef, private router: Router) {
-
-    this.startDate = this.currentDate.startOf('week').format('MMM DD');
-    this.endDate = this.currentDate.endOf('week').format('MMM DD');
-
+  loginObserver;
+  constructor(
+    private modalCtrl: ModalController,
+    private routerOutlet: IonRouterOutlet,
+    private api: ApiService,
+    private loading: LoadingController,
+    private actionSheetCtrl: ActionSheetController,
+    private gestureCtrl: GestureController,
+    private ref: ChangeDetectorRef,
+    private router: Router,
+    private alertCtrl: AlertController
+  ) {
+    this.startDate = this.currentDate.startOf("week").format("MMM DD");
+    this.endDate = this.currentDate.endOf("week").format("MMM DD");
   }
 
   // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
   ngOnInit() {
     const gesture = this.gestureCtrl.create({
-      el: document.getElementById('main'),
+      el: document.getElementById("main"),
       onEnd: (detail) => {
         if (detail.currentX < detail.startX) {
           this.addWeek();
@@ -45,7 +60,7 @@ export class Tab1Page {
           this.subtractWeek();
         }
       },
-      gestureName: 'swipe'
+      gestureName: "swipe",
     });
 
     gesture.enable(true);
@@ -62,23 +77,27 @@ export class Tab1Page {
 
     this.getData();
     //Update userprofile on server
-    this.api.updateUserProfile();
-
+    this.api.updateItem(item);
   }
 
   ionViewWillLeave() {
+    this.loginObserver();
     clearInterval(this.changesInterval);
   }
 
   ionViewWillEnter() {
-    const loggedIn = window.localStorage.getItem('loggedInPlanner');
-    if (!loggedIn || loggedIn === 'null') {
-      this.showLogin();
-    } else {
-      this.getRefreshedData(null);
-    }
+    this.loginObserver = onAuthStateChanged(getAuth(), (user) => {
+      console.log(user);
+      if (user) {
+        this.getRefreshedData(null);
+      } else {
+        this.showLogin();
+      }
+    });
 
-    this.changesInterval = setInterval(() => { this.ref.detectChanges(); }, 100);
+    this.changesInterval = setInterval(() => {
+      this.ref.detectChanges();
+    }, 100);
   }
 
   async edit(item) {
@@ -88,17 +107,17 @@ export class Tab1Page {
       presentingElement: this.routerOutlet.nativeEl,
       componentProps: {
         currentDate: this.currentDate,
-        item
-      }
+        item,
+      },
     });
     await this.slidingList.closeSlidingItems();
     await modal.present();
-    modal.onWillDismiss().then(async data => {
+    modal.onWillDismiss().then(async (data) => {
       // Add Modal dismissed, do logic
       if (data.data) {
         const loading = await this.loading.create({
-          cssClass: 'my-custom-class',
-          message: 'Please wait...',
+          cssClass: "my-custom-class",
+          message: "Please wait...",
         });
         await loading.present();
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -111,10 +130,9 @@ export class Tab1Page {
 
         this.getData();
         //Update userprofile on server
-        this.api.updateUserProfile();
+        this.api.updateItem(item);
         loading.dismiss();
       }
-
     });
   }
 
@@ -126,24 +144,18 @@ export class Tab1Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then(data => {
-      // Login Modal dismissed, do logic
-      window.localStorage.setItem('userProfilePlanner', JSON.stringify(data.data));
-      window.localStorage.setItem('loggedInPlanner', 'true');
-      this.api.userProfile = data.data;
-
+    modal.onWillDismiss().then((data) => {
       this.getData();
     });
-
   }
 
   async getRefreshedData(event) {
     const loading = await this.loading.create({
-      cssClass: 'my-custom-class',
-      message: 'Please wait...',
+      cssClass: "my-custom-class",
+      message: "Please wait...",
     });
     await loading.present();
-    const response = await this.api.getRefreshedData();
+    await this.api.getRefreshedData();
     this.getData();
     loading.dismiss();
     if (event) {
@@ -153,13 +165,13 @@ export class Tab1Page {
 
   async showOptions(item) {
     const sheet = await this.actionSheetCtrl.create({
-      header: 'Options',
+      header: "Options",
       buttons: [
         {
-          text: 'Move to Next Week',
+          text: "Move to Next Week",
           handler: () => {
             const momentDate = dayjs(item.week);
-            item.week = momentDate.add(1, 'week').toISOString();
+            item.week = momentDate.add(1, "week").toISOString();
             const entries = this.api.userProfile.entries;
             for (let i = 0; i < entries.length; i++) {
               if (entries[i].id === item.id) {
@@ -170,16 +182,16 @@ export class Tab1Page {
 
             this.getData();
             //Update userprofile on server
-            this.api.updateUserProfile();
+            this.api.updateItem(item);
 
             return;
-          }
+          },
         },
         {
-          text: 'Move to Previous Week',
+          text: "Move to Previous Week",
           handler: () => {
             const momentDate = dayjs(item.week);
-            item.week = momentDate.subtract(1, 'week').toISOString();
+            item.week = momentDate.subtract(1, "week").toISOString();
             const entries = this.api.userProfile.entries;
             for (let i = 0; i < entries.length; i++) {
               if (entries[i].id === item.id) {
@@ -190,12 +202,12 @@ export class Tab1Page {
 
             this.getData();
             //Update userprofile on server
-            this.api.updateUserProfile();
+            this.api.updateItem(item);
             return;
-          }
+          },
         },
-        {
-          text: 'Save to Recipe Book',
+        /*{
+          text: "Save to Recipe Book",
           handler: () => {
             if (Array.isArray(this.api.userProfile.recipes)) {
               let found = false;
@@ -208,34 +220,34 @@ export class Tab1Page {
               if (!found) {
                 this.api.userProfile.recipes.push(item);
               } else {
-                alert('This is already in your recipe book');
+                alert("This is already in your recipe book");
                 return true;
               }
             } else {
               this.api.userProfile.recipes = [item];
             }
             this.api.updateUserProfile();
-            this.router.navigateByUrl('/tabs/tab1/recipe-book');
-          }
-        }
-      ]
+            this.router.navigateByUrl("/tabs/tab1/recipe-book");
+          },
+        },*/
+      ],
     });
 
     await sheet.present();
   }
 
   subtractWeek() {
-    this.currentDate = this.currentDate.subtract(1, 'week');
-    this.startDate = this.currentDate.startOf('week').format('MMM DD');
-    this.endDate = this.currentDate.endOf('week').format('MMM DD');
+    this.currentDate = this.currentDate.subtract(1, "week");
+    this.startDate = this.currentDate.startOf("week").format("MMM DD");
+    this.endDate = this.currentDate.endOf("week").format("MMM DD");
 
     this.getData();
   }
 
   addWeek() {
-    this.currentDate = this.currentDate.add(1, 'week');
-    this.startDate = this.currentDate.startOf('week').format('MMM DD');
-    this.endDate = this.currentDate.endOf('week').format('MMM DD');
+    this.currentDate = this.currentDate.add(1, "week");
+    this.startDate = this.currentDate.startOf("week").format("MMM DD");
+    this.endDate = this.currentDate.endOf("week").format("MMM DD");
 
     this.getData();
   }
@@ -245,13 +257,15 @@ export class Tab1Page {
 
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < this.api.userProfile.entries.length; i++) {
-      const start = dayjs(this.api.userProfile.entries[i].week).startOf('week');
-      const now = dayjs(this.currentDate).startOf('week');
-      if (start.isSame(now, 'day') && this.api.userProfile.entries[i].deleted !== true) {
+      const start = dayjs(this.api.userProfile.entries[i].week).startOf("week");
+      const now = dayjs(this.currentDate).startOf("week");
+      if (
+        start.isSame(now, "day") &&
+        this.api.userProfile.entries[i].deleted !== true
+      ) {
         this.entries.push(this.api.userProfile.entries[i]);
       }
     }
-
   }
 
   async openDatePicker() {
@@ -262,10 +276,10 @@ export class Tab1Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then(data => {
+    modal.onWillDismiss().then((data) => {
       this.currentDate = dayjs(data.data);
-      this.startDate = this.currentDate.startOf('week').format('MMM DD');
-      this.endDate = this.currentDate.endOf('week').format('MMM DD');
+      this.startDate = this.currentDate.startOf("week").format("MMM DD");
+      this.endDate = this.currentDate.endOf("week").format("MMM DD");
 
       this.getData();
     });
@@ -286,13 +300,13 @@ export class Tab1Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then(data => { });
+    modal.onWillDismiss().then((data) => {});
   }
 
   setToToday() {
     this.currentDate = dayjs();
-    this.startDate = this.currentDate.startOf('week').format('MMM DD');
-    this.endDate = this.currentDate.endOf('week').format('MMM DD');
+    this.startDate = this.currentDate.startOf("week").format("MMM DD");
+    this.endDate = this.currentDate.endOf("week").format("MMM DD");
 
     this.getData();
   }
@@ -307,7 +321,7 @@ export class Tab1Page {
     }
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing
-  };
+  }
 
   async showAdd() {
     const modal = await this.modalCtrl.create({
@@ -315,38 +329,54 @@ export class Tab1Page {
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,
       componentProps: {
-        currentDate: this.currentDate
-      }
+        currentDate: this.currentDate,
+      },
     });
 
     await modal.present();
-    modal.onWillDismiss().then(async data => {
+    modal.onWillDismiss().then(async (data) => {
       // Add Modal dismissed, do logic
       if (data.data) {
         const loading = await this.loading.create({
-          cssClass: 'my-custom-class',
-          message: 'Please wait...',
+          cssClass: "my-custom-class",
+          message: "Please wait...",
         });
         await loading.present();
-        this.api.userProfile.entries.push({
-          week: this.currentDate.startOf('week').toISOString(),
+        const newItem = {
+          week: this.currentDate.startOf("week").toISOString(),
           description: data.data.description,
-          id: uuidv4()
-        });
+          id: uuidv4(),
+        };
+        this.api.userProfile.entries.push(newItem);
 
         this.getData();
         //Update userprofile on server
-        this.api.updateUserProfile();
+        this.api.addItem(newItem);
         loading.dismiss();
       }
-
     });
   }
 
   async delete(item) {
-    await this.api.deleteItem(item);
-    await this.getRefreshedData(null);
-    this.getData();
-  }
+    const alertPop = await this.alertCtrl.create({
+      header: "Are you sure?",
+      buttons: [
+        {
+          text: "No",
+          role: "cancel",
+        },
+        {
+          text: "Yes",
+          role: "confirm",
+          handler: async () => {
+            await this.api.deleteItem(item);
+            await this.getRefreshedData(null);
+            this.getData();
+          },
+        },
+      ],
+    });
 
+    alertPop.present();
+  }
 }

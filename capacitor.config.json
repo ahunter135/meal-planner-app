@@ -1,6 +1,6 @@
 {
-	"appId": "io.ionic.starter",
-	"appName": "Meal Planner",
+	"appId": "com.austinhunter.mealplanner",
+	"appName": "Simple Suppers",
 	"webDir": "www",
 	"bundledWebRuntime": false
 }

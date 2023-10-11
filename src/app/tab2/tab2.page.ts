@@ -1,37 +1,45 @@
-import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { LoginModalComponent } from '../modals/login-modal/login-modal.component';
-import { ApiService } from '../services/api.service';
+import { Component } from "@angular/core";
+import { ModalController } from "@ionic/angular";
+import { LoginModalComponent } from "../modals/login-modal/login-modal.component";
+import { ApiService } from "../services/api.service";
+import { Router } from "@angular/router";
+import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
+import { getDoc, doc, getFirestore } from "firebase/firestore";
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: "app-tab2",
+  templateUrl: "tab2.page.html",
+  styleUrls: ["tab2.page.scss"],
 })
 export class Tab2Page {
   shareCode;
-  constructor(private modalCtrl: ModalController, private api: ApiService) {}
+  observer;
+  constructor(
+    private modalCtrl: ModalController,
+    private api: ApiService,
+    private router: Router
+  ) {}
 
-  ionViewWillEnter() {
-    const loggedIn = window.localStorage.getItem('loggedInPlanner');
+  async ionViewWillEnter() {
+    this.observer = onAuthStateChanged(getAuth(), async (user) => {
+      console.log(user);
 
-    if (!loggedIn || loggedIn === 'null') {
-      this.showLogin();
-    } else {
-      const profile = window.localStorage.getItem('userProfilePlanner');
-      if (profile) {
-        this.api.userProfile = JSON.parse(profile);
+      if (user) {
+        let userDoc = await getDoc(doc(getFirestore(), "users", user.uid));
+        this.shareCode = userDoc.data()["shareCode"];
       }
-      console.log(this.api.userProfile);
-      if (this.api.userProfile) {
-        this.shareCode = this.api.userProfile.shareCode;
-      }
-    }
+    });
   }
 
-  logOut() {
-    window.localStorage.clear();
-    this.showLogin();
+  ionViewWillLeave() {
+    this.observer();
+  }
+
+  async logOut() {
+    this.observer();
+
+    await signOut(getAuth());
+    this.router.navigate([""]);
   }
 
   async showLogin() {
@@ -42,13 +50,6 @@ export class Tab2Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then(data => {
-      // Login Modal dismissed, do logic
-      window.localStorage.setItem('userProfilePlanner', JSON.stringify(data.data));
-      window.localStorage.setItem('loggedInPlanner', 'true');
-      this.api.userProfile = data.data;
-      this.ionViewWillEnter();
-    });
-
+    modal.onWillDismiss().then((data) => {});
   }
 }
