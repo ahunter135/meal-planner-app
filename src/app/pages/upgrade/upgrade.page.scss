@@ -1,0 +1,46 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.subscription-container {
+  max-width: 600px;
+  margin: 50px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  color: #0d3c60;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.highlight {
+  color: #ff6347;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0d3c60;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 25px;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  margin-top: 25px;
+}
+
+.btn:hover {
+  background-color: #0d3c69;
+}

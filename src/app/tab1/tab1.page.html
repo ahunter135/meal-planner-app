@@ -16,6 +16,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" id="main">
+  <div id="warningPlanMsg" *ngIf="api.viewedUser != api.user">
+    Viewing a different users meal plan!
+  </div>
   <ion-card mode="ios" *ngIf="entries.length > 0">
     <ion-card-content>
       <ion-list #slidingList>
@@ -32,7 +35,10 @@
             ></ion-checkbox>
             <ion-reorder slot="end"></ion-reorder>
           </ion-item>
-          <ion-item-options side="end">
+          <ion-item-options
+            side="end"
+            *ngIf="item.mealTime == 'dinner' || !item.mealTime"
+          >
             <ion-item-option color="warning" (click)="edit(item)"
               ><ion-icon
                 slot="icon-only"
@@ -52,7 +58,6 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
-
   <div *ngIf="entries.length === 0" class="no-entries">
     <p>No Entries Available</p>
   </div>
@@ -62,9 +67,9 @@
       ><ion-icon name="arrow-up-circle"></ion-icon
     ></ion-fab-button>
     <ion-fab-list side="top">
-      <!--<ion-fab-button routerLink="/tabs/tab1/recipe-book" class="tint-color">
+      <ion-fab-button routerLink="/tabs/tab1/recipe-book" class="tint-color">
         <ion-icon name="book" color="light"></ion-icon>
-      </ion-fab-button>-->
+      </ion-fab-button>
       <ion-fab-button (click)="showAdd()" class="tint-color">
         <ion-icon name="add" color="light"></ion-icon>
       </ion-fab-button>

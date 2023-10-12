@@ -1,22 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ApiService } from 'src/app/services/api.service';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
+  selector: "app-details",
+  templateUrl: "./details.page.html",
+  styleUrls: ["./details.page.scss"],
 })
 export class DetailsPage implements OnInit {
   item = {
-    description: ""
+    description: "",
   };
-  constructor(private api: ApiService, private route: ActivatedRoute) { }
+  idEdit: boolean = false;
+  constructor(private api: ApiService, private route: ActivatedRoute) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const index = this.route.snapshot.params.index;
-    this.item = this.api.userProfile.recipes[index];
+    let recipes = await this.api.getRecipes();
+    this.item = recipes[index];
     console.log(this.item);
   }
-
 }

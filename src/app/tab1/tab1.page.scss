@@ -11,3 +11,14 @@
 .tint-color {
   --background: var(--ion-color-primary-tint);
 }
+
+#warningPlanMsg {
+  height: 30px;
+  background: yellow;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  font-size: 13px;
+}

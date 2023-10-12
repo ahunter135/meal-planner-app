@@ -6,6 +6,10 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
   },
+  {
+    path: 'upgrade',
+    loadChildren: () => import('./pages/upgrade/upgrade.module').then( m => m.UpgradePageModule)
+  },
 ];
 @NgModule({
   imports: [

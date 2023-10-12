@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import { AlertController, ModalController } from "@ionic/angular";
 import { LoginModalComponent } from "../modals/login-modal/login-modal.component";
 import { ApiService } from "../services/api.service";
 import { Router } from "@angular/router";
@@ -14,10 +14,15 @@ import { getDoc, doc, getFirestore } from "firebase/firestore";
 export class Tab2Page {
   shareCode;
   observer;
+  typedCode;
+  joinedPlans;
+  myPlan;
+  sharedPlanWith;
   constructor(
-    private modalCtrl: ModalController,
+    public modalCtrl: ModalController,
     private api: ApiService,
-    private router: Router
+    private router: Router,
+    private alertCtrl: AlertController
   ) {}
 
   async ionViewWillEnter() {
@@ -25,8 +30,12 @@ export class Tab2Page {
       console.log(user);
 
       if (user) {
+        this.api.viewedUser = getAuth().currentUser.uid;
         let userDoc = await getDoc(doc(getFirestore(), "users", user.uid));
+        this.myPlan = userDoc.id;
         this.shareCode = userDoc.data()["shareCode"];
+        this.joinedPlans = userDoc.data()["joinedPlans"] || [];
+        this.sharedPlanWith = userDoc.data()["sharedPlanWith"] || [];
       }
     });
   }
@@ -51,5 +60,43 @@ export class Tab2Page {
 
     await modal.present();
     modal.onWillDismiss().then((data) => {});
+  }
+
+  async joinPlan() {
+    const lowerCode = this.typedCode.toLowerCase();
+    console.log(lowerCode);
+    await this.api.joinPlan(lowerCode);
+
+    this.modalCtrl.dismiss();
+  }
+
+  async switchPlans(plan: string) {
+    this.api.viewedUser = plan;
+    await this.modalCtrl.dismiss();
+
+    this.router.navigateByUrl("/tabs/tab1?switch=" + plan);
+  }
+
+  restorePurchase() {}
+
+  async stopSharing(plan) {
+    const alertPop = await this.alertCtrl.create({
+      header: "Are you sure?",
+      buttons: [
+        {
+          text: "No",
+          role: "cancel",
+        },
+        {
+          text: "Yes",
+          role: "confirm",
+          handler: async () => {
+            await this.api.stopSharingPlan(plan);
+          },
+        },
+      ],
+    });
+
+    alertPop.present();
   }
 }

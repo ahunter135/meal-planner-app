@@ -15,7 +15,7 @@ import { ApiService } from "../services/api.service";
 import { v4 as uuidv4 } from "uuid";
 import { WeeklyComponent } from "../modals/weekly/weekly.component";
 import { DateComponent } from "../modals/date/date.component";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 @Component({
@@ -37,34 +37,21 @@ export class Tab1Page {
   constructor(
     private modalCtrl: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private api: ApiService,
+    public api: ApiService,
     private loading: LoadingController,
     private actionSheetCtrl: ActionSheetController,
     private gestureCtrl: GestureController,
     private ref: ChangeDetectorRef,
     private router: Router,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private route: ActivatedRoute
   ) {
     this.startDate = this.currentDate.startOf("week").format("MMM DD");
     this.endDate = this.currentDate.endOf("week").format("MMM DD");
   }
 
   // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
-  ngOnInit() {
-    const gesture = this.gestureCtrl.create({
-      el: document.getElementById("main"),
-      onEnd: (detail) => {
-        if (detail.currentX < detail.startX) {
-          this.addWeek();
-        } else if (detail.currentX > detail.startX) {
-          this.subtractWeek();
-        }
-      },
-      gestureName: "swipe",
-    });
-
-    gesture.enable(true);
-  }
+  ngOnInit() {}
 
   async itemHasBeenChecked(item) {
     const entries = this.api.userProfile.entries;
@@ -85,11 +72,27 @@ export class Tab1Page {
     clearInterval(this.changesInterval);
   }
 
-  ionViewWillEnter() {
-    this.loginObserver = onAuthStateChanged(getAuth(), (user) => {
-      console.log(user);
+  ionViewDidEnter() {
+    this.loginObserver = onAuthStateChanged(getAuth(), async (user) => {
       if (user) {
-        this.getRefreshedData(null);
+        const premium = await this.api.isUserPremium();
+
+        if (premium) {
+          this.route.queryParams.subscribe((params) => {
+            if (!params.switch) {
+              this.api.viewedUser = getAuth().currentUser.uid;
+            } else {
+              this.api.viewedUser = params.switch;
+            }
+
+            this.api.user = getAuth().currentUser.uid;
+            this.getRefreshedData(null);
+          });
+        } else {
+          // this.router.navigate(["upgrade"], {
+          //   replaceUrl: true,
+          // });
+        }
       } else {
         this.showLogin();
       }
@@ -98,6 +101,19 @@ export class Tab1Page {
     this.changesInterval = setInterval(() => {
       this.ref.detectChanges();
     }, 100);
+    const gesture = this.gestureCtrl.create({
+      el: document.getElementById("main"),
+      onEnd: (detail) => {
+        if (detail.currentX < detail.startX) {
+          this.addWeek();
+        } else if (detail.currentX > detail.startX) {
+          this.subtractWeek();
+        }
+      },
+      gestureName: "swipe",
+    });
+
+    gesture.enable(false);
   }
 
   async edit(item) {
@@ -144,8 +160,16 @@ export class Tab1Page {
     });
 
     await modal.present();
-    modal.onWillDismiss().then((data) => {
-      this.getData();
+    modal.onWillDismiss().then(async (data) => {
+      const premium = await this.api.isUserPremium();
+
+      if (premium) {
+        this.getData();
+      } else {
+        // this.router.navigate(["upgrade"], {
+        //   replaceUrl: true,
+        // });
+      }
     });
   }
 
@@ -206,30 +230,27 @@ export class Tab1Page {
             return;
           },
         },
-        /*{
+        {
           text: "Save to Recipe Book",
-          handler: () => {
-            if (Array.isArray(this.api.userProfile.recipes)) {
-              let found = false;
-              for (const i of this.api.userProfile.recipes) {
-                if (i.id === item.id) {
-                  found = true;
-                }
+          handler: async () => {
+            let recipes = await this.api.getRecipes();
+            let found = false;
+            for (const i of recipes) {
+              if (i.id === item.id) {
+                found = true;
               }
-
-              if (!found) {
-                this.api.userProfile.recipes.push(item);
-              } else {
-                alert("This is already in your recipe book");
-                return true;
-              }
-            } else {
-              this.api.userProfile.recipes = [item];
             }
-            this.api.updateUserProfile();
+
+            if (!found) {
+              this.api.saveRecipe(item);
+            } else {
+              alert("This is already in your recipe book");
+              return true;
+            }
+
             this.router.navigateByUrl("/tabs/tab1/recipe-book");
           },
-        },*/
+        },
       ],
     });
 
@@ -345,6 +366,7 @@ export class Tab1Page {
         const newItem = {
           week: this.currentDate.startOf("week").toISOString(),
           description: data.data.description,
+          // mealTime: data.data.mealTime,
           id: uuidv4(),
         };
         this.api.userProfile.entries.push(newItem);

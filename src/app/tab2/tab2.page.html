@@ -13,21 +13,127 @@
 
   <ion-card>
     <ion-card-content>
-      <!--<ion-item lines="none">
+      <ion-item lines="full" button detail id="open-modal">
         <ion-label class="ion-text-wrap">
           <ion-text color="primary">
             <h3>Share Code</h3>
           </ion-text>
-          <p>{{shareCode}}</p>
         </ion-label>
-      </ion-item>-->
-      <ion-item lines="none" (click)="logOut()" detail="arrow">
+      </ion-item>
+      <ion-item lines="full" (click)="logOut()" detail="arrow">
         <ion-label
           ><ion-text color="primary">
             <h3>Log Out</h3>
           </ion-text></ion-label
         >
       </ion-item>
+      <ion-item lines="full" button detail id="open-plan-modal">
+        <ion-label class="ion-text-wrap">
+          <ion-text color="primary">
+            <h3>Switch Viewed Plan</h3>
+          </ion-text>
+        </ion-label>
+      </ion-item>
     </ion-card-content>
   </ion-card>
+
+  <ion-modal trigger="open-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modalCtrl.dismiss()">Close</ion-button>
+          </ion-buttons>
+          <ion-title>Share Code</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div id="shareCode">{{shareCode}}</div>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Join a users meal plan</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item lines="none">
+              <ion-label position="stacked">Enter share code</ion-label>
+              <ion-input
+                type="text"
+                [(ngModel)]="typedCode"
+                placeholder="ABC123"
+                (ionChange)="typedCode = typedCode.toUpperCase()"
+              ></ion-input>
+            </ion-item>
+            <ion-button
+              style="margin-top: 25px"
+              expand="block"
+              (click)="joinPlan()"
+              >Join</ion-button
+            >
+            <div id="warningText">
+              Currently, anyone who uses your share code will be able to read &
+              write anything to your meal plan. Keep this key private.
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card *ngIf="sharedPlanWith.length > 0">
+          <ion-card-header>
+            <ion-card-subtitle>Shared Plan With</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item *ngFor="let plan of sharedPlanWith" lines="none">
+              <ion-label style="font-size: 13px"
+                >{{plan | getUser | async}}</ion-label
+              >
+              <ion-button slot="end" (click)="stopSharing(plan)">
+                Remove
+              </ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal trigger="open-plan-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modalCtrl.dismiss()">Close</ion-button>
+          </ion-buttons>
+          <ion-title>Switch Plans</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle
+              >Select which plan you want to join</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item
+              lines="none"
+              button
+              detail="false"
+              (click)="switchPlans(myPlan)"
+              ><ion-label class="ion-text-wrap">My Plan</ion-label></ion-item
+            >
+            <ion-item
+              lines="none"
+              *ngFor="let plan of joinedPlans"
+              button
+              detail="false"
+              (click)="switchPlans(plan)"
+            >
+              <ion-label class="ion-text-wrap"
+                >{{plan | getUser | async}}</ion-label
+              >
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

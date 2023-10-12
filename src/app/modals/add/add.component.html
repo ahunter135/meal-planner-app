@@ -17,8 +17,17 @@
         [(ngModel)]="mealDescription"
       ></ion-input>
     </ion-item>
+    <!--
+    <ion-item lines="none">
+      <ion-label position="stacked">Breakfast, Lunch or Dinner?</ion-label>
+      <ion-select placeholder="Select Mealtime" [(ngModel)]="mealTime">
+        <ion-select-option value="breakfast">Breakfast</ion-select-option>
+        <ion-select-option value="lunch">Lunch</ion-select-option>
+        <ion-select-option value="dinner">Dinner</ion-select-option>
+      </ion-select>
+    </ion-item>-->
   </ion-card-content>
-  <ion-button expand="block"  (click)="addEntry(mealDescription)"
+  <ion-button expand="block" (click)="addEntry(mealDescription)"
     >Submit</ion-button
   >
 </ion-card>
