@@ -9,9 +9,10 @@ import {
 import { environment } from "src/environments/environment";
 import { Capacitor } from "@capacitor/core";
 import { InAppPurchase2 } from "@ionic-native/in-app-purchase-2/ngx";
-import { Platform } from "@ionic/angular";
+import { ModalController, Platform } from "@ionic/angular";
 import { IAPProduct } from "@ionic-native/in-app-purchase-2";
 import { ApiService } from "./services/api.service";
+import { LoginModalComponent } from "./modals/login-modal/login-modal.component";
 
 @Component({
   selector: "app-root",
@@ -23,7 +24,8 @@ export class AppComponent {
   constructor(
     private store: InAppPurchase2,
     private platform: Platform,
-    public api: ApiService
+    public api: ApiService,
+    private modalCtrl: ModalController
   ) {
     const app = initializeApp(environment.firebase);
     if (Capacitor.isNativePlatform) {
@@ -33,18 +35,26 @@ export class AppComponent {
     }
 
     this.platform.ready().then(() => {
-      onAuthStateChanged(getAuth(), (user) => {
-        console.log(user);
+      onAuthStateChanged(getAuth(), async (user) => {
         if (user) {
           this.api.viewedUser = user.uid;
+        } else {
+          const modal = await this.modalCtrl.create({
+            component: LoginModalComponent,
+            swipeToClose: false,
+            backdropDismiss: false,
+          });
+
+          await modal.present();
+          modal.onWillDismiss().then(async (data) => {});
         }
       });
-      this.store.verbosity = this.store.DEBUG;
-      this.registerProducts();
-      this.setupListeners();
+      // this.store.verbosity = this.store.DEBUG;
+      // this.registerProducts();
+      // this.setupListeners();
 
-      // Get the real product information
-      this.store.ready(() => {});
+      // // Get the real product information
+      // this.store.ready(() => {});
     });
   }
 

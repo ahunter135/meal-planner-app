@@ -11,7 +11,12 @@
 <ion-content>
   <div id="cards-container">
     <span *ngFor="let item of recipes; let i = index">
-      <app-recipe-card-small [title]="item.description" [routerLink]="['details', i]"></app-recipe-card-small>
+      <app-recipe-card-small
+        [title]="item.description"
+        [recipe]="item.recipe"
+        [image]="item.recipeImage"
+        [routerLink]="['details', i]"
+      ></app-recipe-card-small>
     </span>
   </div>
 </ion-content>

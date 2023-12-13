@@ -6,21 +6,36 @@
       </ion-button>
     </ion-buttons>
     <ion-title>Recipe Details</ion-title>
+    <ion-buttons slot="end" *ngIf="isEdit">
+      <ion-button (click)="saveContent()"> Save </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-card *ngIf="!isEdit">
+    <img id="recipe-image" [src]="item.recipeImage" />
     <ion-card-header
       ><ion-card-subtitle
         >{{item.description}}</ion-card-subtitle
       ></ion-card-header
     >
-    <ion-card-content> </ion-card-content>
+    <ion-card-content [innerHtml]="item.recipe"></ion-card-content>
   </ion-card>
-  <ion-card *ngIf="isEdit">
+  <ion-card *ngIf="isEdit" class="editor">
+    <img id="recipe-image" [src]="item.recipeImage" />
     <ion-card-content>
-      <div [ngxSummernote]></div>
+      <quill-editor
+        [(ngModel)]="content"
+        (onContentChanged)="setContent($event)"
+        [modules]="{toolbar: [['bold', 'italic', 'underline', 'strike'],[{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'indent': '-1'}, { 'indent': '+1' }], [{ 'header': [2, 3, false] }], ['link']]}"
+      ></quill-editor>
+      <ion-button style="margin-top: 25px" (click)="attachPhoto()"
+        >Attach Photo</ion-button
+      >
+      <ion-button style="margin-top: 25px" (click)="delete()" color="danger"
+        >Delete</ion-button
+      >
     </ion-card-content>
   </ion-card>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

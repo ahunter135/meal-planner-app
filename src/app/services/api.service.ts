@@ -15,8 +15,11 @@ import {
   doc,
   addDoc,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { Platform } from "@ionic/angular";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 @Injectable({
   providedIn: "root",
 })
@@ -62,12 +65,68 @@ export class ApiService {
     return itemDoc.docs[0].id;
   }
 
+  async findItemRecipeDocId(item: any) {
+    let ref = collection(getFirestore(), "users", this.viewedUser, "recipes");
+
+    const itemDoc = await getDocs(query(ref, where("id", "==", item.id)));
+    return itemDoc.docs[0].id;
+  }
+
   async updateItem(item: any) {
     let entry = await this.findItemDocId(item);
+
     updateDoc(
       doc(getFirestore(), "users", this.viewedUser, "entries", entry),
       item
     );
+  }
+
+  async updateItemRecipe(item: any) {
+    let entry = await this.findItemRecipeDocId(item);
+
+    updateDoc(
+      doc(getFirestore(), "users", this.viewedUser, "recipes", entry),
+      item
+    );
+  }
+
+  async attachPhotoToRecipe(item, imageString) {
+    const storage = getStorage();
+
+    // Create a storage reference from our storage service
+    const storageRef = ref(storage, item.id + "/recipeImage.jpg");
+
+    try {
+      function dataURItoBlob(dataURI) {
+        let byteString = atob(dataURI.split(",")[1]);
+        let mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+        let ab = new ArrayBuffer(byteString.length);
+        let ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+      }
+      // Upload the Blob to Firebase Storage
+      const snapshot = await uploadBytes(
+        storageRef,
+        dataURItoBlob("data:image/jpeg;base64," + imageString)
+      );
+
+      // You can now use snapshot.ref.getDownloadURL() to get the download URL if needed
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading image: ", error);
+      return "";
+    }
+  }
+
+  async deleteItemRecipe(item) {
+    let entry = await this.findItemRecipeDocId(item);
+
+    deleteDoc(doc(getFirestore(), "users", this.viewedUser, "recipes", entry));
   }
 
   async addItem(item: any) {
@@ -222,6 +281,7 @@ export class ApiService {
       collection(getFirestore(), "users", this.viewedUser, "recipes")
     );
     let data = [];
+
     recipes.forEach((entry) => {
       data.push(entry.data());
     });

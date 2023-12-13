@@ -1,0 +1,12 @@
+.editor {
+  min-height: 300px;
+}
+#recipe-image {
+  position: relative;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 150px;
+  max-width: 150px;
+  max-height: 300px;
+}

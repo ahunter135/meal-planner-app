@@ -1,9 +1,15 @@
 <div class="card-container">
-  <img id="recipe-image" src="../../../assets/images/no_image_available.png" />
+  <img *ngIf="image" id="recipe-image" [src]="image" />
+  <img
+    *ngIf="!image"
+    id="recipe-image"
+    src="../../../assets/images/no_image_available.png"
+  />
   <div class="card-text-container">
     <span id="recipe-title">
-      <h6>{{title}}</h6>
-      <p>Put the egg on the skillet at 400 degrees...</p>
+      <h6>{{ title }}</h6>
+      <span *ngIf="recipe" [innerHtml]="recipe"></span>
+      <p *ngIf="!recipe">Nothing yet, tap to edit</p>
     </span>
   </div>
 </div>

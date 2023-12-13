@@ -15,14 +15,12 @@ import { NgxSummernoteModule } from "ngx-summernote";
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
   // eslint-disable-next-line max-len
   imports: [
     BrowserModule,
     HttpClientModule,
     IonicModule.forRoot({ mode: "ios" }),
     AppRoutingModule,
-    NgxSummernoteModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

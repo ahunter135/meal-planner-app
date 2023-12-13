@@ -16,7 +16,10 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" id="main">
-  <div id="warningPlanMsg" *ngIf="api.viewedUser != api.user">
+  <div
+    id="warningPlanMsg"
+    *ngIf="api.viewedUser != api.user && api.viewedUser != null"
+  >
     Viewing a different users meal plan!
   </div>
   <ion-card mode="ios" *ngIf="entries.length > 0">

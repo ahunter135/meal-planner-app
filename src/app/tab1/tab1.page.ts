@@ -94,10 +94,11 @@ export class Tab1Page {
           // });
         }
       } else {
+        console.log("HERE");
         this.showLogin();
       }
     });
-
+    console.log("HERE");
     this.changesInterval = setInterval(() => {
       this.ref.detectChanges();
     }, 100);
