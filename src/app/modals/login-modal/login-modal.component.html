@@ -16,10 +16,18 @@
           <ion-input type="password" [(ngModel)]="password"></ion-input>
         </ion-item>
         <span class="button-container">
-          <ion-button expand="block" color="primary" (click)="login()"
+          <ion-button
+            expand="block"
+            color="primary"
+            (click)="login()"
+            [disabled]="!email || !password"
             >Login</ion-button
           >
-          <ion-button expand="block" fill="outline" (click)="create()"
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="create()"
+            [disabled]="!email || !password"
             >Create Account</ion-button
           >
         </span>

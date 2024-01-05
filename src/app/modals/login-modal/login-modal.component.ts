@@ -1,7 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { setDoc, doc, getFirestore } from "firebase/firestore";
+import {
+  UserCredential,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signOut,
+} from "firebase/auth";
+import { setDoc, doc, getFirestore, getDoc } from "firebase/firestore";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -22,10 +27,25 @@ export class LoginModalComponent implements OnInit {
 
   async login() {
     try {
-      const response = (await this.api.login(this.email, this.password)) as any;
-      console.log(response);
+      const response = (await this.api.login(
+        this.email,
+        this.password
+      )) as UserCredential;
       if (response.user) {
-        this.modalCtrl.dismiss();
+        const userDoc = await getDoc(
+          doc(getFirestore(), "users", response.user.uid)
+        );
+
+        if (userDoc.exists && userDoc.data().deleted) {
+          signOut(getAuth());
+          const toast = await this.toastCtrl.create({
+            message: "Account Disabled",
+            duration: 3000,
+          });
+          toast.present();
+        } else {
+          this.modalCtrl.dismiss();
+        }
       }
     } catch (error) {
       this.showToast(error);

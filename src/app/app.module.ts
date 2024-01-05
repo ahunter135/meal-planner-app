@@ -10,7 +10,6 @@ import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { HttpClientModule } from "@angular/common/http";
 import { GetUserPipe } from "./pipes/get-user.pipe";
-import { InAppPurchase2 } from "@ionic-native/in-app-purchase-2/ngx";
 import { NgxSummernoteModule } from "ngx-summernote";
 
 @NgModule({
@@ -22,10 +21,7 @@ import { NgxSummernoteModule } from "ngx-summernote";
     IonicModule.forRoot({ mode: "ios" }),
     AppRoutingModule,
   ],
-  providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    InAppPurchase2,
-  ],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

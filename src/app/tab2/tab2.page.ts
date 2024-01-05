@@ -4,7 +4,7 @@ import { LoginModalComponent } from "../modals/login-modal/login-modal.component
 import { ApiService } from "../services/api.service";
 import { Router } from "@angular/router";
 import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
-import { getDoc, doc, getFirestore } from "firebase/firestore";
+import { getDoc, doc, getFirestore, updateDoc } from "firebase/firestore";
 
 @Component({
   selector: "app-tab2",
@@ -92,6 +92,38 @@ export class Tab2Page {
           role: "confirm",
           handler: async () => {
             await this.api.stopSharingPlan(plan);
+          },
+        },
+      ],
+    });
+
+    alertPop.present();
+  }
+
+  async deleteAccount() {
+    const alertPop = await this.alertCtrl.create({
+      header: "Delete Account",
+      message:
+        "Are you sure you want to delete your account? You won't be able to sign in again.",
+      buttons: [
+        {
+          text: "Cancel",
+          role: "cancel",
+        },
+        {
+          text: "Delete",
+          role: "delete",
+          handler: async () => {
+            // Proceed to delete the account
+            updateDoc(doc(getFirestore(), "users", getAuth().currentUser.uid), {
+              deleted: true,
+            });
+
+            // Sign out after deleting the account
+            await signOut(getAuth());
+
+            // Navigate to the login page or any desired page
+            this.router.navigate([""]);
           },
         },
       ],

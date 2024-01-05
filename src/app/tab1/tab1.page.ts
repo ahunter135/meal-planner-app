@@ -85,10 +85,13 @@ export class Tab1Page {
               this.api.viewedUser = params.switch;
             }
 
+            console.log(this.api.viewedUser);
             this.api.user = getAuth().currentUser.uid;
+            console.log(this.api.user);
             this.getRefreshedData(null);
           });
         } else {
+          this.api.user = getAuth().currentUser.uid;
           // this.router.navigate(["upgrade"], {
           //   replaceUrl: true,
           // });
@@ -370,6 +373,9 @@ export class Tab1Page {
           // mealTime: data.data.mealTime,
           id: uuidv4(),
         };
+        if (!this.api.userProfile.entries) {
+          this.api.userProfile.entries = [];
+        }
         this.api.userProfile.entries.push(newItem);
 
         this.getData();

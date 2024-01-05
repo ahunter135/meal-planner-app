@@ -14,7 +14,7 @@ export class AddComponent implements OnInit {
   endDate;
   mealDescription;
   mealTime = "dinner";
-  constructor(private modalCtrl: ModalController) {}
+  constructor(public modalCtrl: ModalController) {}
 
   ngOnInit() {
     if (this.item) {

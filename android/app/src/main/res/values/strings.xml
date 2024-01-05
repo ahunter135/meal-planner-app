@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Simple Suppers</string>
+    <string name="title_activity_main">Simple Suppers</string>
+    <string name="package_name">com.austinhunter.mealplanner</string>
+    <string name="custom_url_scheme">com.austinhunter.mealplanner</string>
+</resources>
